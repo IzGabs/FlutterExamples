@@ -40,6 +40,29 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     int count = 1;
 
+    final _fabSave = FloatingActionButton.extended(
+        onPressed: () {
+          ///O `validate()` retorna verdadeiro caso todos os formFilds passem pela validação do
+          /// `validator`
+          if (_formGlobalKey.currentState.validate()) {
+            /// Aqui ele salva os campos do TFF e executa aquele `OnSaved`
+            _formGlobalKey.currentState.save();
+            print(user.email);
+            print(user.senha);
+          }
+        },
+        label: Text('Save'));
+
+    final _streamBuilder = StreamBuilder(
+      stream: _stream.stream,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData)
+          return Text('Vindo da Stream : ${snapshot.data}');
+        else
+          return Text('Aguardando seu click');
+      },
+    );
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -60,61 +83,35 @@ class MyApp extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Padding(
-                  padding: EdgeInsets.all(10),
-                  child: TextFormField(
-                    scrollPadding: EdgeInsets.all(8.0),
-                    validator: (value) =>
-                        value.isEmpty ? 'Digita o User vacilao' : null,
-                    onSaved: (value) => user.email = value,
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(width: 0.5))),
-                  )),
-              Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: TextFormField(
-                    scrollPadding: EdgeInsets.all(8.0),
-                    //Acionado no .Validade()
-                    validator: (value) =>
-                        value.isEmpty ? 'Digita a senha mane' : null,
-                    //Acionado no save()
-                    onSaved: (value) => user.senha = value,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(width: 0.5))),
-                  )),
-              FloatingActionButton.extended(
-                  onPressed: () {
-                    ///O `validate()` retorna verdadeiro caso todos os formFilds passem pela validação do
-                    /// `validator`
-                    if (_formGlobalKey.currentState.validate()) {
-                      /// Aqui ele salva os campos do TFF e executa aquele `OnSaved`
-                      _formGlobalKey.currentState.save();
-                      print(user.email);
-                      print(user.senha);
-                    }
-                  },
-                  label: Text('Save')),
-
-              ///StreamBuilder
-              StreamBuilder(
-                stream: _stream.stream,
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (snapshot.hasData)
-                    return Text('Vindo da Stream : ${snapshot.data}');
-                  else
-                    return Text('Aguardando seu click');
-                },
-              ),
+              _buildTextFormField('Digita o User vacilao', false,
+                  (value) => user.email = value),
+              _buildTextFormField(
+                  'Digita a senha mane', true, (value) => user.senha = value),
+              _fabSave,
+              _streamBuilder
             ],
           ),
         ),
       ),
     );
+  }
+
+//Cria os dois TextFields (oque era dois codigos iguais, viraram um)
+  Widget _buildTextFormField(
+      String respValidator, bool isObscure, Function onSaved) {
+    return Padding(
+        padding: EdgeInsets.all(10),
+        child: TextFormField(
+            scrollPadding: EdgeInsets.all(8.0),
+            //Acionado no .Validade()
+            validator: (value) => value.isEmpty ? respValidator : null,
+            //Acionado no save()
+            onSaved: onSaved,
+            obscureText: isObscure,
+            decoration: InputDecoration(
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(width: 0.5)))));
   }
 }
 
