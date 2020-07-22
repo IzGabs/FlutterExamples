@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:form_daniel/provider_teste.dart';
 
 void main() {
   runApp(StartApp());
