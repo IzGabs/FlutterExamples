@@ -49,6 +49,7 @@ class ProviderStart extends StatelessWidget {
           children: [
             ProviderSon(),
             ProviderGrandson(),
+            ClasseDados(),
           ],
         ),
       ),
@@ -88,6 +89,53 @@ class ProviderGrandson extends StatelessWidget {
       onPressed: () => context.read<CounterModel>().aumentar(),
       icon: Icon(Icons.plus_one),
       label: Text('GrandSonBtn'),
+    );
+  }
+}
+
+//Segundo Provider
+
+class Dados extends ChangeNotifier {
+  int _valor = 0;
+  int get valor => _valor;
+
+  void alterValue() {
+    _valor++;
+    notifyListeners();
+  }
+}
+
+class ClasseDados extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => Dados(),
+      child: Center(
+        child: ClasseDados2(),
+      ),
+    );
+  }
+}
+
+class ClasseDados2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<Dados>(
+        builder: (context, value, child) => Column(children: [
+              Text(value.valor.toString()),
+              ClasseDados3(),
+            ]));
+  }
+}
+
+class ClasseDados3 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final providerServices = Provider.of<Dados>(context);
+    return FloatingActionButton.extended(
+      onPressed: () => providerServices.alterValue(),
+      icon: Icon(Icons.plus_one),
+      label: Text('ClasseDaoos3Btn'),
     );
   }
 }
